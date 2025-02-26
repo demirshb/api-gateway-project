@@ -1,0 +1,30 @@
+spring:
+  jackson:
+    default-property-inclusion: non_null
+    deserialization:
+      fail-on-unknown-properties: false
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+        routes:
+          - id: user-service-register
+            uri: ${USER_SERVICE_URL}
+            predicates: Path=/api/v1/auth/register
+          - id: user-service-login
+            uri: ${USER_SERVICE_URL}
+            predicates: Path=/api/v1/auth/login
+          - id: create-order
+            uri: ${ORDER_SERVICE_URL}
+            predicates: Path=/api/v1/order/create-order
+            filters: OrderServiceFilter
+          - id: get-order
+            uri: ${ORDER_SERVICE_URL}
+            predicates: Path=/api/v1/order/get-order
+            filters: OrderServiceFilter
+
+jwt:
+  secret: ${JWT_SECRET}
+server:
+  port: ${PORT}
+

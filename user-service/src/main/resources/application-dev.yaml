@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: admin
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+jwt:
+  secret: 81CE856A12266386CE88518C4343881CE856A12266386CE88518C4343881CE856A12266386CE88518C43438
+  expiration: 5
+
+server:
+  port: 8010
