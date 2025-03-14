@@ -1,0 +1,140 @@
+version: "3"
+services:
+  gateway:
+    container_name: api-gateway
+    build: ./gateway-service
+    ports:
+      - "8000:8000"
+    environment:
+      USER_SERVICE_URL: http://user:8004
+      ORDER_SERVICE_URL: http://order:8005
+      NOTIFICATION_SERVICE_URL: http://notification:8006
+      PORT: 8000
+      JWT_SECRET: 81CE856A12266386CE88518C4343881CE856A12266386CE88518C4343881CE856A12266386CE88518C43438
+      ACTIVE_PROFILE: prod
+    networks:
+      - organization-network
+    depends_on:
+      - db
+      - user
+      - order
+      - notification
+
+  order:
+    container_name: order-service
+    build: ./order-service
+    ports:
+      - "8005:8005"
+    environment:
+      PORT: 8005
+      POSTGRES_IP: db
+      POSTGRES_PORT: 5432
+      TOPIC_NAME: order_created
+      ACTIVE_PROFILE: prod
+      KAFKA_URL: kafka:9092
+    networks:
+      - organization-network
+    depends_on:
+      - db
+ 
+  user:
+    container_name: user-service
+    build: ./user-service
+    ports:
+      - "8004:8004"
+    environment:
+      PORT: 8004
+      JWT_SECRET: 81CE856A12266386CE88518C4343881CE856A12266386CE88518C4343881CE856A12266386CE88518C43438
+      JWT_EXPIRATION_AS_HOUR: 5
+      POSTGRES_IP: db
+      POSTGRES_PORT: 5432
+      ACTIVE_PROFILE: prod
+    networks:
+      - organization-network
+    depends_on:
+      - db
+
+  notification:
+    container_name: notification-service
+    build: ./notification-service
+    ports:
+      - "8006:8006"
+    environment:
+      PORT: 8006
+      POSTGRES_IP: db
+      POSTGRES_PORT: 5432
+      ACTIVE_PROFILE: prod
+      TOPIC_NAME: order_created
+      KAFKA_GROUP_ID: order-created-group
+      USER_SERVICE_URL: http://user:8004
+      KAFKA_URL: kafka:9092
+    networks:
+      - organization-network
+    depends_on:
+      - db
+      - user
+      - kafka
+
+  db:
+    container_name: postgresql
+    image: postgres
+    user: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data 
+    ports:
+      - "5332:5432"
+    networks:
+      - organization-network
+    restart: unless-stopped
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.4
+    container_name: zookeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
+    networks:
+      - organization-network  
+  
+  kafka:
+    image: confluentinc/cp-kafka:7.4.4
+    container_name: kafka-broker
+    depends_on:
+      - zookeeper
+    networks:
+      - organization-network
+    ports:
+      - 29092:29092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    depends_on:
+      - kafka
+      - zookeeper
+    ports:
+      - 8090:8080
+    environment:
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+    networks:
+      - organization-network
+
+networks:
+  organization-network:
+
+volumes:
+  pgdata:

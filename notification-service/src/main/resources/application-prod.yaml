@@ -8,9 +8,6 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
   kafka:
     bootstrap-servers: ${KAFKA_URL}
 
@@ -19,3 +16,7 @@ server:
 
 topic:
   name: ${TOPIC_NAME}
+  groupId: ${KAFKA_GROUP_ID}
+
+client:
+  user-service : ${USER-SERVICE_URL}

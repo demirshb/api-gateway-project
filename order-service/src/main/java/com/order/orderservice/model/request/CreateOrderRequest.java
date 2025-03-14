@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CreateOrderRequest {
     @NotNull
-    private String orderName;
+    private String productName;
     @NotNull
     private Integer orderCount;
 }

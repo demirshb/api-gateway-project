@@ -22,6 +22,10 @@ spring:
             uri: ${ORDER_SERVICE_URL}
             predicates: Path=/api/v1/order/get-order
             filters: OrderServiceFilter
+          - id: get-notification
+            uri: ${NOTIFICATION_SERVICE_URL}
+            predicates: Path=/api/v1/notification/get-notification
+            filters: NotificationServiceFilter
 
 jwt:
   secret: ${JWT_SECRET}

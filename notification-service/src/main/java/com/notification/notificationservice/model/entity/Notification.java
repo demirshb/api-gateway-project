@@ -1,4 +1,4 @@
-package com.order.orderservice.model.entity;
+package com.notification.notificationservice.model.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -17,17 +17,18 @@ import java.time.LocalDate;
 @Data
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "order_table")
-public class Order {
+@Table(name = "notification_table")
+public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String productName;
     private Integer customerId;
+    private Integer orderId;
+    private String productName;
+    private String notificationType;
     @CreatedDate
     private LocalDate createdDate;
     @LastModifiedDate
     private LocalDate updatedDate;
-    private int orderCount;
 
 }

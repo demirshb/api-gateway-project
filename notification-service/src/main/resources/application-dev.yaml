@@ -1,7 +1,7 @@
 spring:
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://${POSTGRES_IP}:${POSTGRES_PORT}/postgres
+    url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: admin
   jpa:
@@ -12,10 +12,15 @@ spring:
       hibernate:
         format_sql: true
   kafka:
-    bootstrap-servers: ${KAFKA_URL}
+    bootstrap-servers: localhost:29092
+
 
 server:
-  port: ${PORT}
+  port: 8030
 
 topic:
-  name: ${TOPIC_NAME}
+  name: OrderTopic
+  groupId: notification-group
+
+client:
+  user-service : http://localhost:8010
