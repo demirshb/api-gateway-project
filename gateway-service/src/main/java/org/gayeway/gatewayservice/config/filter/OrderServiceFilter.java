@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.gayeway.gatewayservice.config.Constants;
 import org.gayeway.gatewayservice.service.JwtService;
+import org.gayeway.gatewayservice.service.RedisServiceImpl;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpHeaders;
@@ -22,19 +23,24 @@ import java.util.List;
 public class OrderServiceFilter extends AbstractGatewayFilterFactory<OrderServiceFilter.Config> {
 
     private final JwtService jwtService;
+    private final RedisServiceImpl redisService;
 
 
-    public OrderServiceFilter(JwtService jwtService) {
+    public OrderServiceFilter(JwtService jwtService, RedisServiceImpl redisService) {
         super(Config.class);
         this.jwtService = jwtService;
+        this.redisService = redisService;
     }
 
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
             try {
+
                 final List<String> authHeaders = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION);
                 if (!CollectionUtils.isEmpty(authHeaders)) {
                     String token = authHeaders.get(0).split(" ")[1];
+                    if(!redisService.isTokenAlive(token))
+                        return this.onError(exchange, HttpStatus.UNAUTHORIZED);
                     Claims claims = jwtService.extractAllClaims(token);
                     String clientId = claims.get(Constants.Api.CLIENT_ID).toString();
                     ServerHttpRequest request = exchange.getRequest().mutate()

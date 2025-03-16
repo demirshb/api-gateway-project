@@ -22,9 +22,14 @@ spring:
             uri: ttp://localhost:8020
             predicates: Path=/api/v1/order/get-order
             filters: OrderServiceFilter
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 
 jwt:
   secret: 81CE856A12266386CE88518C4343881CE856A12266386CE88518C4343881CE856A12266386CE88518C43438
 server:
   port: 8100
-

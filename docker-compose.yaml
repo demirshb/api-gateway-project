@@ -9,6 +9,8 @@ services:
       USER_SERVICE_URL: http://user:8004
       ORDER_SERVICE_URL: http://order:8005
       NOTIFICATION_SERVICE_URL: http://notification:8006
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
       PORT: 8000
       JWT_SECRET: 81CE856A12266386CE88518C4343881CE856A12266386CE88518C4343881CE856A12266386CE88518C43438
       ACTIVE_PROFILE: prod
@@ -48,6 +50,8 @@ services:
       JWT_EXPIRATION_AS_HOUR: 5
       POSTGRES_IP: db
       POSTGRES_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
       ACTIVE_PROFILE: prod
     networks:
       - organization-network
@@ -132,9 +136,22 @@ services:
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
     networks:
       - organization-network
+  
+  redis:
+    image: redis/redis-stack-server:7.2.0-v6
+    container_name: redis-stack
+    ports:
+      - 6379:6379
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+    volumes:
+      - redis_data:/data
+    networks:
+      - organization-network
 
 networks:
   organization-network:
 
 volumes:
   pgdata:
+  redis_data:
