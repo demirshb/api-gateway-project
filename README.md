@@ -2,7 +2,7 @@
 
 This project is designed to show how spring cloud gateway works with dynamic routing.
 
-![alt text](https://github.com/demirshb/api-gateway-project/blob/main/floow.png?raw=true)
+![alt text](https://github.com/demirshb/api-gateway-project/blob/main/flow.png?raw=true)
 
 ## Run
 
