@@ -15,6 +15,6 @@ public class RedisServiceImpl implements RedisService {
     private final RedisTemplate<String, Object> redisTemplate;
 
     public void redisSaveToken(String key, Object value, long timeout, TimeUnit timeUnit) {
-        redisTemplate.opsForValue().set(key, key, timeout, timeUnit);
+        //redisTemplate.opsForValue().set(key, key, timeout, timeUnit);
     }
 }
