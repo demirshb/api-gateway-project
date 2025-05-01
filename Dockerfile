@@ -1,5 +1,5 @@
 # Use an official Maven image as the base image
-FROM maven:3.8.4-openjdk-17-slim AS build
+FROM maven:3.8.6-openjdk-17 AS build
 # Set the working directory in the container
 WORKDIR /app
 # Copy the pom.xml and the project files to the container
@@ -12,6 +12,6 @@ FROM openjdk:17-jdk-slim
 # Set the working directory in the container
 WORKDIR /app
 # Copy the built JAR file from the previous stage to the container
-COPY - from=build /app/target/user-service.jar .
+COPY --from=build /app/target/user-service.jar .
 # Set the command to run the application
 CMD ["java", "-jar", "user-service.jar"]
